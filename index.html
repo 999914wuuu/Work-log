@@ -6,29 +6,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>工作紀錄</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=DM+Mono:wght@400;500&display=swap');
-
-:root {
-–bg: #f5f2ec;
-–surface: #fdfbf7;
-–border: #d8d0c0;
-–border-focus: #8a7560;
-–text: #2a2118;
-–text-muted: #7a6e60;
-–accent: #5c4a32;
-–accent-hover: #3d3020;
-–success-bg: #edf5f0;
-–success-text: #3d6b4f;
-–success-border: #b8d9c5;
-–error-bg: #fdf0f0;
-–error-text: #8b2020;
-–error-border: #e8bbbb;
-}
+  :root {
+    --bg: #f5f2ec;
+    --surface: #fdfbf7;
+    --border: #d8d0c0;
+    --border-focus: #8a7560;
+    --text: #2a2118;
+    --text-muted: #7a6e60;
+    --accent: #5c4a32;
+    --accent-hover: #3d3020;
+    --success-bg: #edf5f0;
+    --success-text: #3d6b4f;
+    --success-border: #b8d9c5;
+    --error-bg: #fdf0f0;
+    --error-text: #8b2020;
+    --error-border: #e8bbbb;
+  }
 
 - { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-font-family: ‘Noto Serif TC’, serif;
+font-family: -apple-system, ‘Helvetica Neue’, Arial, sans-serif;
 background: var(–bg);
 color: var(–text);
 min-height: 100vh;
@@ -39,7 +37,7 @@ padding: 40px 20px 80px;
 
 header { margin-bottom: 32px; }
 h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: 0.06em; margin-bottom: 4px; }
-.subtitle { font-size: 0.75rem; font-family: ‘DM Mono’, monospace; color: var(–text-muted); letter-spacing: 0.04em; }
+.subtitle { font-size: 0.75rem; font-family: ‘Courier New’, monospace; color: var(–text-muted); letter-spacing: 0.04em; }
 
 /* Config */
 .config-wrap {
@@ -51,7 +49,7 @@ margin-bottom: 28px;
 .config-wrap summary {
 padding: 14px 18px;
 font-size: 0.75rem;
-font-family: ‘DM Mono’, monospace;
+font-family: ‘Courier New’, monospace;
 color: var(–text-muted);
 cursor: pointer;
 letter-spacing: 0.06em;
@@ -71,7 +69,7 @@ margin-bottom: 28px;
 }
 .tab {
 padding: 10px 24px;
-font-family: ‘Noto Serif TC’, serif;
+font-family: -apple-system, ‘Helvetica Neue’, Arial, sans-serif;
 font-size: 0.88rem;
 font-weight: 600;
 letter-spacing: 0.04em;
@@ -96,7 +94,7 @@ transition: color 0.15s;
 label {
 display: block;
 font-size: 0.72rem;
-font-family: ‘DM Mono’, monospace;
+font-family: ‘Courier New’, monospace;
 letter-spacing: 0.08em;
 text-transform: uppercase;
 color: var(–text-muted);
@@ -114,7 +112,7 @@ background: var(–surface);
 border: 1px solid var(–border);
 border-radius: 4px;
 padding: 8px 11px;
-font-family: ‘Noto Serif TC’, serif;
+font-family: -apple-system, ‘Helvetica Neue’, Arial, sans-serif;
 font-size: 0.88rem;
 color: var(–text);
 transition: border-color 0.15s;
@@ -131,7 +129,7 @@ background: var(–surface);
 border: 1px solid var(–border);
 border-radius: 4px;
 padding: 8px 32px 8px 11px;
-font-family: ‘Noto Serif TC’, serif;
+font-family: -apple-system, ‘Helvetica Neue’, Arial, sans-serif;
 font-size: 0.88rem;
 color: var(–text);
 appearance: none;
@@ -192,7 +190,7 @@ background: var(–surface);
 border: 1px solid var(–border);
 border-radius: 4px;
 font-size: 0.78rem;
-font-family: ‘DM Mono’, monospace;
+font-family: ‘Courier New’, monospace;
 color: var(–text-muted);
 cursor: pointer;
 white-space: nowrap;
@@ -202,7 +200,7 @@ transition: all 0.12s;
 
 /* Config inputs */
 .config-fields input {
-font-family: ‘DM Mono’, monospace;
+font-family: ‘Courier New’, monospace;
 font-size: 0.75rem;
 color: var(–text-muted);
 }
@@ -217,7 +215,7 @@ background: var(–accent);
 color: #fdfbf7;
 border: none;
 border-radius: 4px;
-font-family: ‘DM Mono’, monospace;
+font-family: ‘Courier New’, monospace;
 font-size: 0.82rem;
 letter-spacing: 0.1em;
 cursor: pointer;
@@ -231,7 +229,7 @@ margin-top: 12px;
 padding: 10px 14px;
 border-radius: 4px;
 font-size: 0.78rem;
-font-family: ‘DM Mono’, monospace;
+font-family: ‘Courier New’, monospace;
 display: none;
 }
 .status.success { display: block; background: var(–success-bg); color: var(–success-text); border: 1px solid var(–success-border); }
@@ -566,7 +564,7 @@ function showStatus(id, type, msg) {
 }
 
 async function postToNotion(dbId, token, properties) {
-  return fetch('https://api.notion.com/v1/pages', {
+  return fetch('https://jolly-haze-1bd1-wklog.workers.dev', {
     method: 'POST',
     headers: {
       'Authorization': 'Bearer ' + token,
