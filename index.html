@@ -309,7 +309,7 @@ display: none;
 </div>
 
 <div class="field">
-  <label>依賴部門 <span class="req">*</span></label>
+  <label>依頼部門 <span class="req">*</span></label>
   <div class="select-wrap">
     <select class="custom-select" id="i-dept"></select>
     <button class="add-btn" onclick="addOption('i-dept', 'depts')" title="新增部門">＋</button>
@@ -393,7 +393,7 @@ display: none;
 </div>
 
 <div class="field">
-  <label>依賴部門 <span class="req">*</span></label>
+  <label>依頼部門 <span class="req">*</span></label>
   <div class="select-wrap">
     <select class="custom-select" id="t-dept"></select>
     <button class="add-btn" onclick="addOption('t-dept', 'depts')" title="新增部門">＋</button>
@@ -602,7 +602,7 @@ async function submitInterp() {
       'Date': { date: { start: date } },
       'SI/CI': { select: { name: sici } },
       '時間': { number: duration },
-      '依賴部門': { select: { name: dept } },
+      '依頼部門': { select: { name: dept } },
     };
     if (persons.length) props['駐在員'] = { multi_select: persons };
     if (kpis.length) props['KPI'] = { multi_select: kpis };
@@ -650,7 +650,7 @@ async function submitTrans() {
       'Date': { date: { start: date } },
       'File Type': { select: { name: filetype } },
       'Category': { select: { name: category } },
-      '依賴部門': { select: { name: dept } },
+      '依頼部門': { select: { name: dept } },
       'Routine': { checkbox: routine },
     };
     if (kpis.length) props['KPI'] = { multi_select: kpis };
