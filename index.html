@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🙂</text></svg>">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工作紀錄</title>
+<style>
+  :root {
+    --bg: #f5f2ec;
+    --surface: #fdfbf7;
+    --border: #d8d0c0;
+    --border-focus: #8a7560;
+    --text: #2a2118;
+    --text-muted: #7a6e60;
+    --accent: #5c4a32;
+    --accent-hover: #3d3020;
+    --success-bg: #edf5f0;
+    --success-text: #3d6b4f;
+    --success-border: #b8d9c5;
+    --error-bg: #fdf0f0;
+    --error-text: #8b2020;
+    --error-border: #e8bbbb;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+  }
+
+  .container { max-width: 600px; margin: 0 auto; }
+
+  header { margin-bottom: 32px; }
+  h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .subtitle { font-size: 0.75rem; font-family: 'Courier New', monospace; color: var(--text-muted); letter-spacing: 0.04em; }
+
+  /* Config */
+  .config-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 28px;
+  }
+  .config-wrap summary {
+    padding: 14px 18px;
+    font-size: 0.75rem;
+    font-family: 'Courier New', monospace;
+    color: var(--text-muted);
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    user-select: none;
+    list-style: none;
+  }
+  .config-wrap summary:hover { color: var(--text); }
+  .config-wrap summary::before { content: '▸ '; }
+  .config-wrap[open] summary::before { content: '▾ '; }
+  .config-fields { padding: 0 18px 18px; display: flex; flex-direction: column; gap: 12px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+  }
+  .tab {
+    padding: 10px 24px;
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #9a8e80;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    margin-bottom: -1px;
+    transition: color 0.15s;
+  }
+  .tab.active { color: var(--text); border-bottom-color: var(--text); }
+  .tab:hover:not(.active) { color: var(--text); }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Fields */
+  .field { margin-bottom: 18px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  label {
+    display: block;
+    font-size: 0.72rem;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  label .req { color: var(--accent); margin-left: 2px; }
+  label .opt { text-transform: none; letter-spacing: 0; font-size: 0.68rem; color: var(--border-focus); margin-left: 4px; }
+
+  input[type="text"],
+  input[type="date"],
+  input[type="number"],
+  textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 11px;
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.88rem;
+    color: var(--text);
+    transition: border-color 0.15s;
+  }
+  input:focus, textarea:focus { outline: none; border-color: var(--border-focus); }
+  textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
+
+  /* Custom select with add */
+  .select-wrap { position: relative; display: flex; gap: 8px; align-items: center; }
+
+  .custom-select {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 32px 8px 11px;
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.88rem;
+    color: var(--text);
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a6e60'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 11px center;
+    transition: border-color 0.15s;
+  }
+  .custom-select:focus { outline: none; border-color: var(--border-focus); }
+
+  .add-btn {
+    flex-shrink: 0;
+    width: 30px;
+    height: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.12s;
+    line-height: 1;
+  }
+  .add-btn:hover { border-color: var(--border-focus); color: var(--text); }
+
+  /* Multi-select with add */
+  .multi-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .multi-tags { display: flex; flex-wrap: wrap; gap: 6px; min-height: 20px; }
+  .multi-tag {
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    background: #ede8df;
+    color: var(--accent);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.12s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .multi-tag:hover { border-color: var(--border-focus); }
+  .multi-tag.selected { background: var(--text); color: #fdfbf7; border-color: var(--text); }
+  .multi-tag .remove { font-size: 0.7rem; opacity: 0.6; cursor: pointer; }
+  .multi-tag .remove:hover { opacity: 1; }
+
+  .add-row { display: flex; gap: 6px; }
+  .add-row input { flex: 1; font-size: 0.82rem; padding: 5px 9px; }
+  .add-row button {
+    padding: 5px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-family: 'Courier New', monospace;
+    color: var(--text-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.12s;
+  }
+  .add-row button:hover { border-color: var(--border-focus); color: var(--text); }
+
+  /* Config inputs */
+  .config-fields input {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+  /* Submit */
+  .btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    color: #fdfbf7;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--accent-hover); }
+  .btn:disabled { background: var(--border); cursor: not-allowed; }
+
+  .status {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-family: 'Courier New', monospace;
+    display: none;
+  }
+  .status.success { display: block; background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border); }
+  .status.error { display: block; background: var(--error-bg); color: var(--error-text); border: 1px solid var(--error-border); }
+
+  /* Routine 候選清單 */
+  .routine-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+  }
+  .routine-section-label {
+    font-size: 0.72rem;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .routine-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .routine-item {
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text);
+    transition: all 0.12s;
+    text-align: left;
+  }
+  .routine-item:hover {
+    border-color: var(--border-focus);
+    background: var(--surface);
+  }
+  .routine-empty {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .routine-loading {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-family: 'Courier New', monospace;
+  }
+
+  @media (max-width: 480px) {
+    .two-col { grid-template-columns: 1fr; }
+    .tab { padding: 10px 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>工作紀錄</h1>
+    <div class="subtitle">notion work log</div>
+  </header>
+
+  <details class="config-wrap" id="config-details">
+    <summary>API 設定</summary>
+    <div class="config-fields">
+      <div class="field">
+        <label>Notion Integration Token</label>
+        <input type="text" id="cfg-token" placeholder="secret_xxxxxxxxxxxxxxxx" oninput="saveConfig()">
+      </div>
+      <div class="two-col">
+        <div class="field">
+          <label>口譯 Database ID</label>
+          <input type="text" id="cfg-interp-db" placeholder="32位英數字" oninput="saveConfig()">
+        </div>
+        <div class="field">
+          <label>筆譯 Database ID</label>
+          <input type="text" id="cfg-trans-db" placeholder="32位英數字" oninput="saveConfig()">
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('interp', this)">🎙 口譯</button>
+    <button class="tab" onclick="switchTab('trans', this)">📄 筆譯</button>
+  </div>
+
+  <!-- 口譯 -->
+  <div id="panel-interp" class="panel active">
+
+    <div class="routine-section">
+      <div class="routine-section-label">固定案件 快速帶入</div>
+      <div class="routine-list" id="i-routine-list">
+        <div class="routine-loading">載入中…</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Name <span class="req">*</span></label>
+      <input type="text" id="i-name" placeholder="會議名稱">
+    </div>
+
+    <div class="two-col">
+      <div class="field">
+        <label>Date <span class="req">*</span></label>
+        <input type="date" id="i-date">
+      </div>
+      <div class="field">
+        <label>時間（小時）<span class="req">*</span></label>
+        <input type="number" id="i-duration" min="0.5" step="0.5" placeholder="1">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>SI/CI <span class="req">*</span></label>
+      <div class="select-wrap">
+        <select class="custom-select" id="i-sici">
+          <option value="">請選擇</option>
+          <option value="SI">SI</option>
+          <option value="CI">CI</option>
+          <option value="支援">支援</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>依頼部門 <span class="req">*</span></label>
+      <div class="select-wrap">
+        <select class="custom-select" id="i-dept"></select>
+        <button class="add-btn" onclick="addOption('i-dept', 'depts')" title="新增部門">＋</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>駐在員 <span class="opt">選填，可複選</span></label>
+      <div class="multi-wrap">
+        <div class="multi-tags" id="i-person-tags"></div>
+        <div class="add-row">
+          <input type="text" id="i-person-input" placeholder="輸入姓名後按新增">
+          <button onclick="addMultiOption('i-person-input', 'i-person-tags', 'persons')">新增</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>KPI <span class="opt">選填，可複選</span></label>
+      <div class="multi-wrap">
+        <div class="multi-tags" id="i-kpi-tags"></div>
+        <div class="add-row">
+          <input type="text" id="i-kpi-input" placeholder="輸入 KPI 項目後按新增">
+          <button onclick="addMultiOption('i-kpi-input', 'i-kpi-tags', 'kpis')">新增</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Routine</label>
+      <div class="select-wrap">
+        <select class="custom-select" id="i-routine">
+          <option value="false">否</option>
+          <option value="true">是</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Memo <span class="opt">選填</span></label>
+      <textarea id="i-memo" placeholder="備註…"></textarea>
+    </div>
+
+    <button class="btn" id="i-btn" onclick="submitInterp()">儲存口譯紀錄</button>
+    <div id="i-status" class="status"></div>
+  </div>
+
+  <!-- 筆譯 -->
+  <div id="panel-trans" class="panel">
+
+    <div class="routine-section">
+      <div class="routine-section-label">固定案件 快速帶入</div>
+      <div class="routine-list" id="t-routine-list">
+        <div class="routine-loading">載入中…</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Name <span class="req">*</span></label>
+      <input type="text" id="t-name" placeholder="檔案名稱">
+    </div>
+
+    <div class="field">
+      <label>Date <span class="req">*</span></label>
+      <input type="date" id="t-date">
+    </div>
+
+    <div class="field">
+      <label>File Type <span class="req">*</span></label>
+      <div class="select-wrap">
+        <select class="custom-select" id="t-filetype">
+          <option value="">請選擇</option>
+          <option value="Word">Word</option>
+          <option value="PPT">PPT</option>
+          <option value="Excel">Excel</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Category <span class="req">*</span></label>
+      <div class="select-wrap">
+        <select class="custom-select" id="t-category">
+          <option value="">請選擇</option>
+          <option value="正式報告">正式報告</option>
+          <option value="簡報">簡報</option>
+          <option value="教育訓練教材">教育訓練教材</option>
+          <option value="時程計畫">時程計畫</option>
+          <option value="合約">合約</option>
+          <option value="規章">規章</option>
+        </select>
+        <button class="add-btn" onclick="addOption('t-category', 'categories')" title="新增類別">＋</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>依頼部門 <span class="req">*</span></label>
+      <div class="select-wrap">
+        <select class="custom-select" id="t-dept"></select>
+        <button class="add-btn" onclick="addOption('t-dept', 'depts')" title="新增部門">＋</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Routine</label>
+      <div class="select-wrap">
+        <select class="custom-select" id="t-routine">
+          <option value="false">否</option>
+          <option value="true">是</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>KPI <span class="opt">選填，可複選</span></label>
+      <div class="multi-wrap">
+        <div class="multi-tags" id="t-kpi-tags"></div>
+        <div class="add-row">
+          <input type="text" id="t-kpi-input" placeholder="輸入 KPI 項目後按新增">
+          <button onclick="addMultiOption('t-kpi-input', 't-kpi-tags', 'kpis')">新增</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Memo <span class="opt">選填</span></label>
+      <textarea id="t-memo" placeholder="備註…"></textarea>
+    </div>
+
+    <button class="btn" id="t-btn" onclick="submitTrans()">儲存筆譯紀錄</button>
+    <div id="t-status" class="status"></div>
+  </div>
+
+</div>
+
+<script>
+const CFG_KEY = 'notion_wl_v2';
+const LIST_KEY = 'notion_wl_lists';
+
+// 預設清單（空的，讓使用者自己加）
+const defaultLists = {
+  depts: [],
+  persons: [],
+  kpis: [],
+  categories: ['正式報告', '簡報', '教育訓練教材', '時程計畫', '合約', '規章']
+};
+
+function getLists() {
+  return JSON.parse(localStorage.getItem(LIST_KEY) || JSON.stringify(defaultLists));
+}
+
+function saveLists(lists) {
+  localStorage.setItem(LIST_KEY, JSON.stringify(lists));
+}
+
+function getConfig() {
+  return JSON.parse(localStorage.getItem(CFG_KEY) || '{}');
+}
+
+function saveConfig() {
+  const cfg = {
+    token: document.getElementById('cfg-token').value.trim(),
+    interpDb: document.getElementById('cfg-interp-db').value.trim(),
+    transDb: document.getElementById('cfg-trans-db').value.trim(),
+  };
+  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+}
+
+// 初始化 select 選項
+function populateSelect(selectId, listKey) {
+  const sel = document.getElementById(selectId);
+  const lists = getLists();
+  const items = lists[listKey] || [];
+  // 保留第一個 placeholder option
+  while (sel.options.length > 1) sel.remove(1);
+  items.forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item;
+    opt.textContent = item;
+    sel.appendChild(opt);
+  });
+}
+
+// 新增 select 選項
+function addOption(selectId, listKey) {
+  const name = prompt('新增選項：');
+  if (!name || !name.trim()) return;
+  const val = name.trim();
+  const lists = getLists();
+  if (!lists[listKey].includes(val)) {
+    lists[listKey].push(val);
+    saveLists(lists);
+  }
+  // 同步所有用同一個 listKey 的 select
+  if (listKey === 'depts') {
+    populateSelect('i-dept', 'depts');
+    populateSelect('t-dept', 'depts');
+  } else if (listKey === 'categories') {
+    populateSelect('t-category', 'categories');
+  }
+  // 選到剛加的
+  const sel = document.getElementById(selectId);
+  sel.value = val;
+}
+
+// Multi-select tag 系統
+function renderMultiTags(tagsContainerId, listKey) {
+  const container = document.getElementById(tagsContainerId);
+  const lists = getLists();
+  const items = lists[listKey] || [];
+  container.innerHTML = '';
+  items.forEach(item => {
+    const tag = document.createElement('div');
+    tag.className = 'multi-tag';
+    tag.dataset.value = item;
+    tag.innerHTML = `<span>${item}</span>`;
+    tag.addEventListener('click', () => tag.classList.toggle('selected'));
+    container.appendChild(tag);
+  });
+}
+
+function addMultiOption(inputId, tagsContainerId, listKey) {
+  const input = document.getElementById(inputId);
+  const val = input.value.trim();
+  if (!val) return;
+  const lists = getLists();
+  if (!lists[listKey]) lists[listKey] = [];
+  if (!lists[listKey].includes(val)) {
+    lists[listKey].push(val);
+    saveLists(lists);
+  }
+  // 重新渲染，同步兩個 KPI 區塊
+  if (listKey === 'kpis') {
+    renderMultiTags('i-kpi-tags', 'kpis');
+    renderMultiTags('t-kpi-tags', 'kpis');
+  } else if (listKey === 'persons') {
+    renderMultiTags('i-person-tags', 'persons');
+  }
+  // 自動選到剛加的
+  const allTags = document.querySelectorAll('#' + tagsContainerId + ' .multi-tag');
+  allTags.forEach(t => { if (t.dataset.value === val) t.classList.add('selected'); });
+  input.value = '';
+}
+
+function getSelectedTags(tagsContainerId) {
+  return Array.from(document.querySelectorAll('#' + tagsContainerId + ' .multi-tag.selected'))
+    .map(t => ({ name: t.dataset.value }));
+}
+
+// Tab 切換
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+function showStatus(id, type, msg) {
+  const el = document.getElementById(id);
+  el.className = 'status ' + type;
+  el.textContent = msg;
+  if (type === 'success') setTimeout(() => { el.className = 'status'; }, 4000);
+}
+
+async function postToNotion(dbId, token, properties) {
+  return fetch(WORKER_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json',
+      'Notion-Version': '2022-06-28',
+    },
+    body: JSON.stringify({ parent: { database_id: dbId }, properties }),
+  });
+}
+
+const WORKER_URL = 'https://jolly-haze-1bd1-wklog.joyce85wu-github.workers.dev';
+
+async function loadRoutineItems(dbId, listId, fillFn) {
+  const container = document.getElementById(listId);
+  if (!dbId) {
+    container.innerHTML = '<div class="routine-empty">請先設定 Database ID</div>';
+    return;
+  }
+  try {
+    const res = await fetch(WORKER_URL + '?action=query&db=' + dbId);
+    const data = await res.json();
+    const pages = data.results || [];
+    if (pages.length === 0) {
+      container.innerHTML = '<div class="routine-empty">尚無固定案件（Routine）紀錄</div>';
+      return;
+    }
+    container.innerHTML = '';
+    pages.forEach(page => {
+      const name = page.properties.Name?.title?.[0]?.plain_text || '（無標題）';
+      const btn = document.createElement('button');
+      btn.className = 'routine-item';
+      btn.textContent = name;
+      btn.onclick = () => fillFn(page);
+      container.appendChild(btn);
+    });
+  } catch(e) {
+    container.innerHTML = '<div class="routine-empty">載入失敗，請確認設定</div>';
+  }
+}
+
+function fillInterpFromRoutine(page) {
+  const props = page.properties;
+  document.getElementById('i-name').value = props.Name?.title?.[0]?.plain_text || '';
+  const sici = props['SI/CI']?.select?.name || '';
+  document.getElementById('i-sici').value = sici;
+  const dept = props['依頼部門']?.select?.name || '';
+  document.getElementById('i-dept').value = dept;
+  const duration = props['時間']?.number || '';
+  document.getElementById('i-duration').value = duration;
+  const routine = props['Routine']?.checkbox || false;
+  document.getElementById('i-routine').value = routine ? 'true' : 'false';
+  // 駐在員
+  const persons = props['駐在員']?.multi_select || [];
+  document.querySelectorAll('#i-person-tags .multi-tag').forEach(t => {
+    t.classList.toggle('selected', persons.some(p => p.name === t.dataset.value));
+  });
+  // KPI
+  const kpis = props['KPI']?.multi_select || [];
+  document.querySelectorAll('#i-kpi-tags .multi-tag').forEach(t => {
+    t.classList.toggle('selected', kpis.some(k => k.name === t.dataset.value));
+  });
+  document.getElementById('i-memo').value = '';
+  document.getElementById('i-memo').focus();
+}
+
+function fillTransFromRoutine(page) {
+  const props = page.properties;
+  document.getElementById('t-name').value = props.Name?.title?.[0]?.plain_text || '';
+  const filetype = props['File Type']?.select?.name || '';
+  document.getElementById('t-filetype').value = filetype;
+  const category = props['Category']?.select?.name || '';
+  document.getElementById('t-category').value = category;
+  const dept = props['依頼部門']?.select?.name || '';
+  document.getElementById('t-dept').value = dept;
+  document.getElementById('t-routine').value = 'true';
+  // KPI
+  const kpis = props['KPI']?.multi_select || [];
+  document.querySelectorAll('#t-kpi-tags .multi-tag').forEach(t => {
+    t.classList.toggle('selected', kpis.some(k => k.name === t.dataset.value));
+  });
+  document.getElementById('t-memo').value = '';
+  document.getElementById('t-memo').focus();
+}
+
+async function submitInterp() {
+  const cfg = getConfig();
+  if (!cfg.token || !cfg.interpDb) { showStatus('i-status', 'error', '請先填寫 API 設定'); return; }
+
+  const name = document.getElementById('i-name').value.trim();
+  const date = document.getElementById('i-date').value;
+  const duration = parseFloat(document.getElementById('i-duration').value);
+  const sici = document.getElementById('i-sici').value;
+  const dept = document.getElementById('i-dept').value;
+
+  if (!name || !date || !sici || !dept || isNaN(duration)) {
+    showStatus('i-status', 'error', '請填寫所有必填欄位（*）'); return;
+  }
+
+  const persons = getSelectedTags('i-person-tags');
+  const kpis = getSelectedTags('i-kpi-tags');
+  const memo = document.getElementById('i-memo').value.trim();
+
+  const btn = document.getElementById('i-btn');
+  btn.disabled = true; btn.textContent = '儲存中…';
+
+  try {
+    const routineVal = document.getElementById('i-routine').value === 'true';
+    const props = {
+      'Name': { title: [{ text: { content: name } }] },
+      'Date': { date: { start: date } },
+      'SI/CI': { select: { name: sici } },
+      '時間': { number: duration },
+      '依頼部門': { select: { name: dept } },
+      'Routine': { checkbox: routineVal },
+    };
+    if (persons.length) props['駐在員'] = { multi_select: persons };
+    if (kpis.length) props['KPI'] = { multi_select: kpis };
+    if (memo) props['Memo'] = { rich_text: [{ text: { content: memo } }] };
+
+    const res = await postToNotion(cfg.interpDb, cfg.token, props);
+    if (res.ok) {
+      showStatus('i-status', 'success', '✓ 已儲存「' + name + '」');
+      resetInterp();
+    } else {
+      const err = await res.json();
+      showStatus('i-status', 'error', '錯誤：' + (err.message || res.status));
+    }
+  } catch (e) {
+    showStatus('i-status', 'error', '網路錯誤，請確認連線');
+  } finally {
+    btn.disabled = false; btn.textContent = '儲存口譯紀錄';
+  }
+}
+
+async function submitTrans() {
+  const cfg = getConfig();
+  if (!cfg.token || !cfg.transDb) { showStatus('t-status', 'error', '請先填寫 API 設定'); return; }
+
+  const name = document.getElementById('t-name').value.trim();
+  const date = document.getElementById('t-date').value;
+  const filetype = document.getElementById('t-filetype').value;
+  const category = document.getElementById('t-category').value;
+  const dept = document.getElementById('t-dept').value;
+
+  if (!name || !date || !filetype || !category || !dept) {
+    showStatus('t-status', 'error', '請填寫所有必填欄位（*）'); return;
+  }
+
+  const routine = document.getElementById('t-routine').value === 'true';
+  const kpis = getSelectedTags('t-kpi-tags');
+  const memo = document.getElementById('t-memo').value.trim();
+
+  const btn = document.getElementById('t-btn');
+  btn.disabled = true; btn.textContent = '儲存中…';
+
+  try {
+    const props = {
+      'Name': { title: [{ text: { content: name } }] },
+      'Date': { date: { start: date } },
+      'File Type': { select: { name: filetype } },
+      'Category': { select: { name: category } },
+      '依頼部門': { select: { name: dept } },
+      'Routine': { checkbox: routine },
+    };
+    if (kpis.length) props['KPI'] = { multi_select: kpis };
+    if (memo) props['Memo'] = { rich_text: [{ text: { content: memo } }] };
+
+    const res = await postToNotion(cfg.transDb, cfg.token, props);
+    if (res.ok) {
+      showStatus('t-status', 'success', '✓ 已儲存「' + name + '」');
+      resetTrans();
+    } else {
+      const err = await res.json();
+      showStatus('t-status', 'error', '錯誤：' + (err.message || res.status));
+    }
+  } catch (e) {
+    showStatus('t-status', 'error', '網路錯誤，請確認連線');
+  } finally {
+    btn.disabled = false; btn.textContent = '儲存筆譯紀錄';
+  }
+}
+
+function resetInterp() {
+  document.getElementById('i-name').value = '';
+  document.getElementById('i-duration').value = '';
+  document.getElementById('i-sici').value = '';
+  document.getElementById('i-dept').value = '';
+  document.getElementById('i-memo').value = '';
+  document.querySelectorAll('#i-person-tags .multi-tag, #i-kpi-tags .multi-tag')
+    .forEach(t => t.classList.remove('selected'));
+  document.getElementById('i-date').value = new Date().toISOString().split('T')[0];
+}
+
+function resetTrans() {
+  document.getElementById('t-name').value = '';
+  document.getElementById('t-filetype').value = '';
+  document.getElementById('t-category').value = '';
+  document.getElementById('t-dept').value = '';
+  document.getElementById('t-memo').value = '';
+  document.querySelectorAll('#t-kpi-tags .multi-tag')
+    .forEach(t => t.classList.remove('selected'));
+  document.getElementById('t-date').value = new Date().toISOString().split('T')[0];
+}
+
+// 初始化
+window.addEventListener('DOMContentLoaded', () => {
+  const cfg = getConfig();
+  if (cfg.token) document.getElementById('cfg-token').value = cfg.token;
+  if (cfg.interpDb) document.getElementById('cfg-interp-db').value = cfg.interpDb;
+  if (cfg.transDb) document.getElementById('cfg-trans-db').value = cfg.transDb;
+
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('i-date').value = today;
+  document.getElementById('t-date').value = today;
+
+  populateSelect('i-dept', 'depts');
+  populateSelect('t-dept', 'depts');
+  populateSelect('t-category', 'categories');
+  renderMultiTags('i-person-tags', 'persons');
+  renderMultiTags('i-kpi-tags', 'kpis');
+  renderMultiTags('t-kpi-tags', 'kpis');
+
+  // 若設定是空的，自動展開
+  if (!cfg.token) document.getElementById('config-details').open = true;
+
+  // 載入 Routine 候選清單
+  if (cfg.interpDb) loadRoutineItems(cfg.interpDb, 'i-routine-list', fillInterpFromRoutine);
+  else document.getElementById('i-routine-list').innerHTML = '<div class="routine-empty">請先設定口譯 Database ID</div>';
+
+  if (cfg.transDb) loadRoutineItems(cfg.transDb, 't-routine-list', fillTransFromRoutine);
+  else document.getElementById('t-routine-list').innerHTML = '<div class="routine-empty">請先設定筆譯 Database ID</div>';
+});
+</script>
+</body>
+</html>
